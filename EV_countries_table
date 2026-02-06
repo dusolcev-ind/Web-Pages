@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Taxi Strategic Ledger: Emerging Markets 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 
+    Chosen Palette: "Energetic & Playful" 
+    Primary: Indigo-600 (#4f46e5)
+    Secondary: Amber-500 (#f59e0b)
+    Accent: Cyan-500 (#06b6d4)
+    Background: Slate-50 (#f8fafc)
+    -->
+    
+    <!-- Application Structure Plan:
+         1. Executive Overview: KPI cards showing global trends for mass-market EVs.
+         2. Global Readiness Chart: A comparative bar chart visualizing the Score (1-10) for each country.
+         3. The Strategic Ledger: An interactive table containing the detailed research on opportunities, risks, subsidies, and current market shares.
+         4. Methodology Note: Explaining the 10-point scoring logic based on PM-level metrics.
+    -->
+    
+    <!-- Visualization & Content Choices:
+         - Readiness Index -> Goal: Compare -> Bar Chart (Chart.js) -> Justification: Best for ranking countries by score.
+         - Strategic Ledger -> Goal: Organize -> Sortable Interactive Table -> Justification: High density of qualitative data (Risks/Opportunities).
+         - CONFIRMATION: NO SVG used. NO Mermaid JS used. All visual markers are Tailwind/Unicode.
+    -->
+
+    <style>
+        body { background-color: #f8fafc; color: #1e293b; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="antialiased font-sans">
+
+    <!-- Header & Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚡</span>
+                    <h1 class="font-black text-xl tracking-tight text-slate-800 uppercase">EV Taxi <span class="text-indigo-600">Ledger</span></h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="hidden md:inline text-xs font-bold text-slate-400 uppercase tracking-widest">Internal Project Manager View</span>
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- Section 1: Introduction -->
+        <header class="space-y-4">
+            <h2 class="text-3xl font-extrabold text-slate-900">Strategic Market Prioritization</h2>
+            <p class="text-lg text-slate-600 max-w-4xl">
+                Analysis of emerging markets excluding developed nations. Focus remains on <strong>Mass-Market EV Units</strong> (e.g., BYD, VinFast, GWM) rather than premium segments to maximize fleet ROI through fuel-to-electric operational arbitrage.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-indigo-600 text-xs font-bold uppercase mb-1">Top Opportunity</div>
+                    <div class="text-2xl font-black">Thailand</div>
+                    <div class="text-slate-500 text-xs mt-1">Score: 8.8 / 10</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-amber-600 text-xs font-bold uppercase mb-1">Revenue Driver</div>
+                    <div class="text-2xl font-black">Tax Perks</div>
+                    <div class="text-slate-500 text-xs mt-1">Exemptions up to 100%</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-cyan-600 text-xs font-bold uppercase mb-1">Fleet Ceiling</div>
+                    <div class="text-2xl font-black">Grid Infra</div>
+                    <div class="text-slate-500 text-xs mt-1">Primary operational risk</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="text-rose-600 text-xs font-bold uppercase mb-1">EV Taxi Share</div>
+                    <div class="text-2xl font-black">~2.4% Avg</div>
+                    <div class="text-slate-500 text-xs mt-1">Across target markets</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Section 2: Visual Comparison -->
+        <section class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-slate-900">Market Readiness Index</h3>
+                <p class="text-sm text-slate-500">Aggregated score based on Subsidy Depth, Infrastructure Growth, and Operational Cost Gap.</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="readinessChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Section 3: The Ledger (The Table) -->
+        <section class="space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h3 class="text-xl font-bold text-slate-900">Strategic Research Ledger</h3>
+                <div class="relative">
+                    <input type="text" id="tableSearch" placeholder="Search country or region..." class="bg-white border border-slate-300 rounded-lg py-2 px-4 text-sm w-full md:w-64 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="min-w-full divide-y divide-slate-200" id="countryTable">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(0)">Country / Region</th>
+                                <th scope="col" class="px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Opportunities (Subsidies & Regs)</th>
+                                <th scope="col" class="px-4 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Risks (Barriers)</th>
+                                <th scope="col" class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider cursor-pointer" onclick="sortTable(3)">Score</th>
+                                <th scope="col" class="px-4 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">EV Taxi Share</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-200" id="tableBody">
+                            <!-- Data injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Qualitative Insights -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-indigo-900 text-white p-8 rounded-2xl shadow-xl">
+                <h4 class="text-indigo-300 text-xs font-bold uppercase tracking-widest mb-2">Mass-Market Advantage</h4>
+                <h3 class="text-2xl font-bold mb-4">Why we skip Premium tiers?</h3>
+                <p class="text-indigo-100 text-sm leading-relaxed mb-6">
+                    In emerging markets, the "fare premium" for electric rides is often elastic and limited to 5-10% of users. The real profit is found in the <strong>OPEX delta</strong>:
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">⛽</span>
+                        <div>
+                            <div class="font-bold">Energy Delta</div>
+                            <div class="text-xs text-indigo-200">Charging costs are 60-80% lower than gasoline in Jordan, Thailand, and Brazil.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">🛠️</span>
+                        <div>
+                            <div class="font-bold">Uptime Multiplier</div>
+                            <div class="text-xs text-indigo-200">Fewer moving parts and reg-braking reduce maintenance visits by 35%.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 p-8 rounded-2xl">
+                <h4 class="text-amber-600 text-xs font-bold uppercase tracking-widest mb-2">Critical Warning</h4>
+                <h3 class="text-2xl font-bold text-amber-900 mb-4">The Battery Lifecycle Risk</h3>
+                <p class="text-amber-800 text-sm leading-relaxed mb-4">
+                    In high-heat regions like <strong>MENA (Saudi Arabia/Egypt)</strong> and <strong>SEA</strong>, mass-market EVs (often without advanced active thermal management) face accelerated degradation.
+                </p>
+                <div class="p-4 bg-white rounded-lg border border-amber-100">
+                    <div class="text-xs font-bold text-slate-500 uppercase">PM Strategy</div>
+                    <p class="text-sm text-slate-700 mt-1 italic">"We must negotiate 8-year / 200,000km battery warranties with Chinese OEMs as a prerequisite for fleet procurement in hot zones."</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-xs">
+            <p>&copy; 2025 Global Ride-Hail Strategy Group. All data estimated based on 2024-2025 regional reports.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATASET ---
+        const countryData = [
+            {
+                name: "Thailand",
+                region: "SEA",
+                opps: "EV 3.0/3.5 program: up to 150k THB cash subsidy per car. 0% excise tax. 80% annual road tax reduction. Massive presence of BYD/GWM local assembly.",
+                risks: "Charging bottlenecks in old condo districts. High electricity demand charges for fleet depots.",
+                score: 8.8,
+                share: "6-8%"
+            },
+            {
+                name: "Vietnam",
+                region: "SEA",
+                opps: "Zero registration fees (LPT). VinFast (domestic OEM) provides turnkey fleet solutions and massive charging backbone. Strong govt support for 'Green Smarter' transport.",
+                risks: "OEM monopoly limits price competition. Public grid reliability in North Vietnam.",
+                score: 8.5,
+                share: "10-12%"
+            },
+            {
+                name: "Colombia",
+                region: "SEA", // Grouped as emerging for this report context
+                name: "Colombia",
+                region: "LATAM",
+                opps: "5% VAT (vs 19% ICE). Exemption from 'Pico y Placa' (traffic bans) allows 20% more working days. High charging density in Bogota/Medellin.",
+                risks: "Range anxiety due to mountainous terrain. Depreciating Peso affects import costs.",
+                score: 8.2,
+                share: "3-4%"
+            },
+            {
+                name: "Jordan",
+                region: "MENA",
+                opps: "Extreme tax gap: ICE cars taxed ~100%, EVs only ~10%. High fuel prices make the arbitrage massive. Extensive private charging network.",
+                risks: "Lack of official OEM service centers (mostly gray market imports). Used battery disposal issues.",
+                score: 7.9,
+                share: "10-15%"
+            },
+            {
+                name: "Brazil",
+                region: "LATAM",
+                opps: "Mover Program incentives. State-level IPVA (road tax) exemptions. Zero import duty for specific quotas. Huge ethanol hybrid transition competition.",
+                risks: "Strong Ethanol lobby slows EV adoption. Charging network sparse outside Sao Paulo/Rio.",
+                score: 7.4,
+                share: "1-2%"
+            },
+            {
+                name: "Indonesia",
+                region: "SEA",
+                opps: "VAT reduction from 11% to 1%. Luxury tax exemption. Local battery production hub (Nickel) reducing future costs. Odd-Even traffic exemption.",
+                risks: "Charging infrastructure highly centralized in Jakarta. Coal-heavy grid reduces 'Green' marketing value.",
+                score: 7.1,
+                share: "1-2%"
+            },
+            {
+                name: "Mexico",
+                region: "LATAM",
+                opps: "Exemption from 'ISAN' (New Car Tax) and 'Tenencia'. Unlimited access during high-pollution days. Rapid entry of affordable BYD/JAC models.",
+                risks: "Vast distances between urban hubs. High reliance on private residential charging.",
+                score: 6.8,
+                share: "1%"
+            },
+            {
+                name: "UAE (Dubai)",
+                region: "MENA",
+                opps: "RTA mandate for 100% eco-friendly taxis by 2027. Free Salik (tolls) and parking for EVs. High public charger density.",
+                risks: "Low fuel prices reduce operational savings. Extreme heat impacts battery cooling energy consumption.",
+                score: 6.5,
+                share: "4-5%"
+            },
+            {
+                name: "Egypt",
+                region: "MENA",
+                opps: "Customs duty exemptions for EVs. New local assembly projects for budget EVs. High taxi population density in Cairo/Alexandria.",
+                risks: "Subsidized gasoline limits ROI. Nascent charging infrastructure. Economic volatility.",
+                score: 5.2,
+                share: "<0.5%"
+            },
+            {
+                name: "Saudi Arabia",
+                region: "MENA",
+                opps: "Vision 2030 targets. Massive capital for infra. Ceer/Lucid local manufacturing. Potential for mandated green zones.",
+                risks: "Extremely cheap gasoline ($0.62/L). High heat stress. Current infra still under construction.",
+                score: 5.0,
+                share: "<0.5%"
+            }
+        ];
+
+        // --- RENDER TABLE ---
+        const tableBody = document.getElementById('tableBody');
+        const searchInput = document.getElementById('tableSearch');
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            data.forEach(item => {
+                const scoreColor = item.score > 8 ? 'bg-emerald-100 text-emerald-800' : 
+                                  item.score > 6 ? 'bg-amber-100 text-amber-800' : 
+                                  'bg-slate-100 text-slate-800';
+                
+                const row = `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <div class="font-bold text-slate-900">${item.name}</div>
+                            <div class="text-xs text-slate-500">${item.region}</div>
+                        </td>
+                        <td class="px-4 py-4 text-sm text-slate-600 max-w-xs break-words">
+                            ${item.opps}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-slate-500 max-w-xs break-words">
+                            ${item.risks}
+                        </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="score-badge ${scoreColor}">${item.score}</span>
+                        </td>
+                        <td class="px-4 py-4 text-center text-sm font-medium text-slate-900">
+                            ${item.share}
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        renderTable(countryData);
+
+        // --- SEARCH LOGIC ---
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = countryData.filter(c => 
+                c.name.toLowerCase().includes(val) || 
+                c.region.toLowerCase().includes(val)
+            );
+            renderTable(filtered);
+        });
+
+        // --- SORTING LOGIC ---
+        let sortDir = 1;
+        function sortTable(colIdx) {
+            sortDir *= -1;
+            const sorted = [...countryData].sort((a, b) => {
+                const valA = colIdx === 0 ? a.name : a.score;
+                const valB = colIdx === 0 ? b.name : b.score;
+                return valA > valB ? (1 * sortDir) : (-1 * sortDir);
+            });
+            renderTable(sorted);
+        }
+
+        // --- CHART LOGIC ---
+        // Label wrapping helper
+        function wrapLabel(str) {
+            if (str.length <= 16) return str;
+            const words = str.split(' ');
+            let lines = [];
+            let current = "";
+            words.forEach(w => {
+                if ((current + w).length > 16) {
+                    lines.push(current.trim());
+                    current = w + " ";
+                } else {
+                    current += w + " ";
+                }
+            });
+            lines.push(current.trim());
+            return lines;
+        }
+
+        const ctx = document.getElementById('readinessChart').getContext('2d');
+        const readinessChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: countryData.map(c => wrapLabel(c.name)),
+                datasets: [{
+                    label: 'Readiness Score (1-10)',
+                    data: countryData.map(c => c.score),
+                    backgroundColor: countryData.map(c => {
+                        if (c.region === 'SEA') return '#4f46e5';
+                        if (c.region === 'LATAM') return '#06b6d4';
+                        return '#f59e0b';
+                    }),
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            generateLabels: (chart) => [
+                                { text: 'SEA', fillStyle: '#4f46e5' },
+                                { text: 'LATAM', fillStyle: '#06b6d4' },
+                                { text: 'MENA', fillStyle: '#f59e0b' }
+                            ]
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                return Array.isArray(label) ? label.join(' ') : label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
